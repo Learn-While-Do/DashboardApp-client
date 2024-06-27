@@ -1,0 +1,17 @@
+@mixin flex-v {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  @mixin flex-h {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  @mixin full-abs {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }

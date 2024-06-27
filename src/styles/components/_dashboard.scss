@@ -1,0 +1,180 @@
+.default-layout {
+  text-align: center;
+  color: $color-brand-2;
+
+  @include flex-h;
+  height: 100vh;
+
+  > aside {
+    width: 20%;
+
+    @include flex-v;
+
+    > header {
+      @include flex-h;
+      align-items: center;
+      justify-content: flex-start;
+      background-color: $color-brand-1;
+
+      padding: 25px;
+      height: 70px;
+      position: relative;
+
+      > h2 {
+        padding-left: 24px;
+        font-size: x-large;
+        text-transform: uppercase;
+      }
+
+      > .logo {
+        height: 40px;
+        width: 40px;
+      }
+    }
+
+    > nav {
+      @include flex-v;
+      overflow-y: auto;
+      flex: 1;
+      justify-content: space-between;
+      background-color: $color-brand-2;
+      color: $color-white;
+
+      > .nav-section {
+        padding: 20px;
+
+        .section-title {
+          margin: 20px 20px 10px 20px;
+          padding: 25px;
+          font-weight: 700;
+          font-size: 25px;
+          line-height: 15px;
+          color: #ffffff;
+
+          opacity: 0.8;
+        }
+
+        > section {
+          position: relative;
+
+          > a {
+            @include flex-h;
+            align-items: center;
+            color: inherit;
+            height: 40px;
+            width: 220px;
+            margin: 10px;
+            padding: 20px 20px 25px 10px;
+            font-size: 14px;
+            background-color: $color-brand-2;
+            border-radius: 7px;
+            transition: background-color 0.2s ease-out;
+
+            .nav_icon {
+
+              height: 25px;
+              padding-right: 25px;
+              color: $color-white
+            }
+
+            > span {
+              min-width: 140px;
+              font-size: 18px;
+              line-clamp: 2;
+            }
+
+            &:link {
+              text-decoration: none;
+            }
+
+            &:hover {
+              background-color: $color-hover-1;
+            }
+          }
+
+          > .subs {
+            opacity: 0;
+            max-height: 0;
+            pointer-events: none;
+            transition: max-height 0.3s;
+
+            > a {
+              display: flex;
+              padding: 8px 0 8px 14px;
+
+              max-width: 175px;
+              font-size: 14px;
+              border-radius: 7px;
+              opacity: 0.8;
+              position: relative;
+
+              overflow: hidden;
+              text-overflow: ellipsis;
+
+              line-clamp: 2;
+
+
+              &:link {
+                text-decoration: none;
+              }
+
+              &:hover {
+                opacity: 1;
+                background-color: $color-3;
+              }
+
+              &.router-link-exact-active {
+                opacity: 1;
+                background-color: $color-1;
+              }
+
+              &.each {
+                margin: .1rem 3rem;
+                color: $color-white;
+              }
+            }
+          }
+          &.is-toggled {
+            > a {
+              color: $color-1;
+              opacity: 1;
+              transform: none;
+              transition: ease 0.3s;
+
+              > .menuToggle {
+                transform: rotate(180deg);
+                transition: ease 0.2s;
+              }
+            }
+            > .subs {
+              opacity: 1;
+              max-height: 500px;
+              pointer-events: all;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  > .body {
+    border: $color-brand-2 solid 1px;
+    > header {
+      @include flex-h;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+      background-color: #ffffff;
+
+      > .title {
+        text-transform: uppercase;
+        font-size: 20px;
+        line-height: 1;
+        padding: 25px 40px;
+      }
+    }
+    @include flex-v;
+    flex: 1;
+    background-color: #f5f5f5;
+  }
+}

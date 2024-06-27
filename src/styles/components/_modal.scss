@@ -1,0 +1,134 @@
+.modal {
+    font-family: "IBM Plex Sans";
+
+    > .modal-background {
+        @include full-abs;
+        background-color: rgba(0,0,0, 0.5);
+        height: 100vh;
+    }
+}
+
+.modal-content {
+    position: fixed;
+    background: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 450px;
+    border-radius: 5px;
+    text-align: center;
+
+    .header {
+        position: relative;
+        text-transform: uppercase;
+        min-height: 40px;
+        width: auto;
+        padding: 12px 34px 24px;
+        background-color: $color-header;
+        margin-bottom: 10px;
+
+        border-bottom: 1px solid rgba(45, 64, 89, 0.3);
+
+        .content {
+            position: relative;
+            width: 100%;
+            height: 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            .icon {
+                position: absolute;
+                height: 12px;
+                width: 12px;
+                margin-top: 12px;
+                margin-left: 380px;
+            }
+
+            .icon:hover {
+                cursor: pointer;
+            }
+
+            .title {
+                font-style: normal;
+                font-weight: 700;
+                font-size: 24px;
+                line-height: 30px;
+            }
+        }
+    }
+    .validation-mark {
+        font-weight: 800;
+        color: red;
+    }
+
+    input,
+    textarea {
+        width: 22rem;
+        margin: 5px 24px;
+        padding: 5px 24px;
+        border: 1px solid rgba(45, 64, 89, 0.3);
+        border-radius: 3px;
+        margin-bottom: 20px;
+    }
+
+    select {
+        width: 25rem;
+        margin: 5px 24px;
+        padding: 5px 24px;
+        border: 1px solid rgba(45, 64, 89, 0.3);
+        border-radius: 3px;
+        margin-bottom: 20px;
+    }
+
+    .footer {
+        position: relative;
+        width: auto;
+        height: 40px;
+        border-top: 1px solid rgba(45, 64, 89, 0.3);
+        padding: 24px;
+
+        .content {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            button {
+                padding: 12px 24px;
+                color: #fff;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 16px;
+                letter-spacing: .1em;
+                background: #a4abb5;
+                border: none;
+                border-radius: 3px;
+            }
+
+            button:disabled,
+            button[disabled] {
+                cursor: auto;
+                opacity: .6;
+            }
+
+            .cancel {
+                color: black;
+                background-color: #f3f2ef;
+
+                &:hover {
+                    background-color: #dbdad7;
+                }
+            }
+
+            .confirm {
+                background: $color-primary;
+                &:hover:not([disabled]) {
+                    cursor: pointer;
+                    opacity: .9;
+                }
+            }
+
+        }
+    }
+}
