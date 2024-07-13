@@ -17,6 +17,9 @@
             </label>
             <select v-model="supplierId">
                 <option value="" disabled selected>Select Supplier</option>
+                <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                    {{ supplier.company_name }}
+                </option>
             </select>
             <label>
                 <strong>
@@ -29,6 +32,9 @@
             </label>
             <select v-model="categoryId">
                 <option value="" disabled selected>Select Category</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">
+                    {{ category.name }}
+                </option>
             </select>
             <label>
                 <strong>
@@ -71,7 +77,7 @@
             <div class="footer">
                 <div class="content">
                     <button class="cancel" @click="closeModal()">CANCEL</button>
-                    <button class="confirm" disabled @click="addNewRecord()">CONFIRM</button>
+                    <button class="confirm" :disabled="!buttonEnable" @click="addNewRecord()">CONFIRM</button>
 
                 </div>
             </div>
@@ -80,11 +86,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onBeforeMount, ref, watch } from 'vue';
 
 import Modal from '@/components/common/Modal.vue'
 
 import Close_Icon from '@/assets/icons/Close_Icon.vue';
+
+
+import { loadSuppliers } from '@/api/reporting/suppliers';
+import { loadCategories } from '@/api/common/categories';
+import { addNewProduct } from '@/api/reporting/products';
+import { IProduct } from '@/models/IProduct';
 
 
 export default defineComponent({
@@ -93,7 +105,7 @@ export default defineComponent({
         Modal,
 
     },
-    emits: ['close-modal'],
+    emits: ['close-modal', 'update-list'],
 
     setup(_, context) {
 
@@ -106,13 +118,70 @@ export default defineComponent({
         const unitsInStock = ref();
         const unitsOnOrder = ref();
 
+        const suppliers = ref()
+        const categories = ref()
+
+        watch(
+            () => [
+                supplierId.value,
+                categoryId.value,
+                productName.value,
+                unitPrice.value,
+                unitsInStock.value,
+                unitsOnOrder.value,
+            ],
+            () => {
+                if (supplierId.value === ''
+                    || categoryId.value === ''
+                    || productName.value === ''
+                    || unitPrice.value === undefined
+                    || unitsInStock.value === undefined
+                    || unitsOnOrder.value === undefined
+                    || unitPrice.value === ''
+                    || unitsInStock.value === ''
+                    || unitsOnOrder.value === '') {
+                    buttonEnable.value = false;
+                } else {
+                    buttonEnable.value = true;
+                }
+            }
+        );
+
+        const getCategories = async () => {
+            categories.value = await loadCategories();
+        };
+        const getSuppliers = async () => {
+            suppliers.value = await loadSuppliers();
+        };
+
         const addNewRecord = () => {
-            closeModal();
+            let newProductRecord: Partial<IProduct> = {};
+            newProductRecord.supplierId = supplierId.value;
+            newProductRecord.categoryId = categoryId.value;
+            newProductRecord.productName = productName.value;
+            newProductRecord.unitPrice = unitPrice.value;
+            newProductRecord.unitsInStock = unitsInStock.value;
+            newProductRecord.unitsOnOrder = unitsOnOrder.value;
+
+            addNewProduct(newProductRecord).then(() => {
+                updateList();
+                closeModal();
+            });
+        };
+
+        const updateList = () => {
+            context.emit('update-list');
         };
 
         const closeModal = () => {
             context.emit('close-modal');
         };
+
+        onBeforeMount(() => {
+            getCategories()
+            getSuppliers()
+
+        })
 
         return {
             buttonEnable,
@@ -122,6 +191,9 @@ export default defineComponent({
             unitPrice,
             unitsInStock,
             unitsOnOrder,
+
+            suppliers,
+            categories,
 
             addNewRecord,
             closeModal,

@@ -18,8 +18,11 @@
                 </strong>
             </label>
 
-            <select>
+            <select v-model="productId">
                 <option value="" disabled selected>Select product</option>
+                <option v-for="product in products" :key="product.id" :value="product.id">
+                    {{ product.product_name }}
+                </option>
             </select>
 
             <label>
@@ -31,8 +34,11 @@
                 </strong>
             </label>
 
-            <select>
+            <select v-model="customerId">
                 <option value="" disabled selected>Select customer</option>
+                <option v-for="customer in customers" :key="customer.id" :value="customer.id">
+                    {{ customer.title }} - {{ customer.first_name }} {{ customer.last_name }}
+                </option>
             </select>
 
             <label>
@@ -44,7 +50,7 @@
                 </strong>
             </label>
 
-            <input type="date">
+            <input type="date" v-model="requiredDate">
 
             <label>
                 <strong>
@@ -68,6 +74,17 @@
             </label>
 
             <input type="text" v-model="shippedAddress">
+
+            <label>
+                <strong>
+                    <small>
+                        Shipped city
+                        <span class="validation-mark">*</span>
+                    </small>
+                </strong>
+            </label>
+
+            <input type="text" v-model="shippedCity">
 
 
             <label>
@@ -96,7 +113,7 @@
             <div class="footer">
                 <div class="content">
                     <button class="cancel" @click="closeModal()">CANCEL</button>
-                    <button class="confirm" @click="addNewRecord()">CONFIRM</button>
+                    <button :disabled="!buttonEnable" class="confirm" @click="addNewRecord()">CONFIRM</button>
                 </div>
             </div>
         </div>
@@ -109,7 +126,11 @@ import Modal from '@/components/common/Modal.vue'
 
 import Close_Icon from '@/assets/icons/Close_Icon.vue'
 
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onBeforeMount, ref, watch } from 'vue'
+import { loadCustomers } from '@/api/relations/customers';
+import { loadProducts } from '@/api/reporting/products';
+import { IOrder } from '@/models/IOrder';
+import { addNewOrder } from '@/api/reporting/orders';
 
 export default defineComponent({
     components: {
@@ -117,7 +138,7 @@ export default defineComponent({
         Modal
     },
 
-    emits: ['close-modal'],
+    emits: ['close-modal', 'update-list'],
 
     setup(_, context) {
 
@@ -132,15 +153,71 @@ export default defineComponent({
         const shippedCountry = ref('')
         const shippedPostalCode = ref('')
 
+        const customers = ref()
+        const products = ref()
+
+        watch(()=> [customerId.value, productId.value, requiredDate.value, shippedName.value,  
+                    shippedAddress.value, shippedCity.value, shippedCountry.value, shippedPostalCode.value],
+                    ()=> {
+                        if(customerId.value === '' 
+                            || productId.value === '' 
+                            || requiredDate.value === '' 
+                            || shippedName.value === '' 
+                            || shippedAddress.value === '' 
+                            || shippedCity.value === '' 
+                            || shippedCountry.value === '' 
+                            || shippedPostalCode.value === ''
+                        ) {
+                            buttonEnable.value = false
+                        } else {
+                            buttonEnable.value = true
+                        }
+                    }
+                )
+
+        const getCustomers = async () => {
+            customers.value = await loadCustomers();
+            
+        }
+
+        const getProducts = async () => {
+            products.value = await loadProducts();
+        }
+
         const addNewRecord = () => {
-            closeModal();
+            
+            let newOrderRecord: Partial<IOrder> = {}
+                newOrderRecord.customerId = customerId.value;
+                newOrderRecord.productId = productId.value;
+                newOrderRecord.requiredDate = requiredDate.value;
+                newOrderRecord.shippedName = shippedName.value;
+                newOrderRecord.shippedAddress = shippedAddress.value;
+                newOrderRecord.shippedCity = shippedCity.value;
+                newOrderRecord.shippedCountry = shippedCountry.value;
+                newOrderRecord.shippedPostalCode = shippedPostalCode.value;
+
+                addNewOrder(newOrderRecord).then(()=> {
+                    updateList();
+                    closeModal();
+                })
         }
 
         const closeModal = () => {
             context.emit('close-modal');
         }
 
+        const updateList = () => {
+            context.emit('update-list');
+        }
+
+        onBeforeMount(() => {
+            getCustomers();
+            getProducts();
+        })
+
         return {
+            buttonEnable,
+
             productId,
             customerId,
             requiredDate,
@@ -149,6 +226,9 @@ export default defineComponent({
             shippedCity,
             shippedCountry,
             shippedPostalCode,
+
+            customers,
+            products,
 
             addNewRecord,
             closeModal

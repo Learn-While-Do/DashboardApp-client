@@ -129,6 +129,13 @@
                 }
             }
 
+            .danger {
+                background: $color-delete;
+                &:hover:not([disabled]) {
+                    cursor: pointer;
+                    opacity: .9;
+                }
+            }
         }
     }
 }
