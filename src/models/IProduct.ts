@@ -2,6 +2,7 @@ import { ICategory } from "./ICategory";
 import { ISupplier } from "./ISupplier";
 
 export interface IProduct {
+    id: string;
     productName: string;
     supplier: ISupplier | null;
     category: ICategory;

@@ -132,15 +132,19 @@ import { loadProducts } from '@/api/reporting/products';
 import { IOrder } from '@/models/IOrder';
 import { addNewOrder } from '@/api/reporting/orders';
 
+import { useStore } from 'vuex';
+
 export default defineComponent({
     components: {
         Close_Icon,
         Modal
     },
 
-    emits: ['close-modal', 'update-list'],
+    emits: ['close-modal'],
 
     setup(_, context) {
+
+        const store = useStore()
 
         const buttonEnable = ref(false)
 
@@ -196,18 +200,17 @@ export default defineComponent({
                 newOrderRecord.shippedCountry = shippedCountry.value;
                 newOrderRecord.shippedPostalCode = shippedPostalCode.value;
 
-                addNewOrder(newOrderRecord).then(()=> {
-                    updateList();
+                addNewOrder(newOrderRecord).then((responseObject)=> {
+                   
+                    store.dispatch('orderManagement/postOrder', { responseObject})
                     closeModal();
+                }).catch(error => {
+                    console.log('error creating object', error);  
                 })
         }
 
         const closeModal = () => {
             context.emit('close-modal');
-        }
-
-        const updateList = () => {
-            context.emit('update-list');
         }
 
         onBeforeMount(() => {

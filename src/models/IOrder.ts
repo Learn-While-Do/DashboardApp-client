@@ -2,6 +2,7 @@ import { ICustomer } from "./ICustomer";
 import { IProduct } from "./IProduct";
 
 export interface IOrder {
+    id: string;
     orderDate: Date;
     customer: ICustomer;
     product: IProduct;

@@ -40,7 +40,7 @@ export const addNewOrder = (newOrderRecord: Partial<IOrder>) => {
       })
       .then((response: AxiosResponse) => {
         if (response.status === 201) {
-          resolve(response.data);
+          return resolve(response.data);
         } else {
           reject();
         }
@@ -93,6 +93,25 @@ export const deleteRecordsInOrders = (id: string) => {
     })
   })
 }
+
+export const getOrderDetails = (orderId: string) => {
+
+  return new Promise((resolve, reject) => {
+    api
+      .get(URLS.orders + orderId + "/") //, {}
+      .then((response: AxiosResponse) => {
+
+        if (response.status === 200) {
+          resolve(response.data);
+        } else {
+          reject();
+        }
+      })
+      .catch((error: AxiosError) => {
+        console.log("caught error in order details >> ", error);
+      });
+  });
+};
 
 
 

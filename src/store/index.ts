@@ -1,14 +1,15 @@
 import { createStore } from 'vuex'
+import state from './state'
+import { GlobalState } from './types'
+import orderManagement from './modules/orderManagement';
+import productManagement from './modules/productManagement';
 
-export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
+const store = createStore<GlobalState>({
+  state,
   modules: {
+    orderManagement: orderManagement,
+    productManagement: productManagement
   }
 })
+
+export default store;

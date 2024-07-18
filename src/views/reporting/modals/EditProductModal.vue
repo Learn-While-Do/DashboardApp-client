@@ -146,7 +146,7 @@ export default defineComponent({
                 unitPrice: unitPrice.value === '' ? 0 : unitPrice.value,
                 unitsInStock: unitsInStock.value === '' ? 0 : unitsInStock.value,
                 unitsOnOrder: unitsOnOrder.value === '' ? 0 : unitsOnOrder.value,
-                supplierId: supplierIdToUpdate.value === '' ? presentSupplier.id : supplierIdToUpdate.value,
+                supplier: supplierIdToUpdate.value === '' ? presentSupplier : suppliers.value.find((x:any) => x.id === supplierIdToUpdate.value)
             }
             editProduct(editedProduct)
         };

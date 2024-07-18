@@ -43,7 +43,7 @@ export const addNewProduct = (newProductRecord: Partial<IProduct>) => {
       )
       .then((response: AxiosResponse) => {
         if (response.status === 201) {
-          resolve(response.data);
+          return resolve(response.data);
         } else {
           reject();
         }
@@ -63,7 +63,7 @@ export const editRecordInProducts = (id: string, editedProduct: IProduct) => {
         unit_price: editedProduct.unitPrice,
         units_in_stock: editedProduct.unitsInStock,
         units_on_order: editedProduct.unitsOnOrder,
-        supplier: editedProduct.supplierId,
+        supplier: editedProduct.supplier!.id,
       }) 
       .then((response: AxiosResponse) => {
         if (response.status === 200) {
@@ -95,3 +95,23 @@ export const deleteRecordsInProducts = (id: string) => {
     })
   })
 }
+
+
+export const getProductDetails = (productId: string) => {
+
+  return new Promise((resolve, reject) => {
+    api
+      .get(URLS.products + productId + "/") //, {}
+      .then((response: AxiosResponse) => {
+
+        if (response.status === 200) {
+          resolve(response.data);
+        } else {
+          reject();
+        }
+      })
+      .catch((error: AxiosError) => {
+        console.log("caught error in product details >> ", error);
+      });
+  });
+};

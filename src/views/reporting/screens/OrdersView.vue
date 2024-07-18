@@ -5,17 +5,18 @@
             Reporting / Orders
         </span>
         <button class="button is-primary is-on-header" @click="openCreateModal">
-            <Plus_Icon class="nav_icon"/>
+            <Plus_Icon class="nav_icon" />
             New order
         </button>
     </header>
 
-    <create-order-modal v-if="isCreateModalVisible" @close-modal="closeModal" @update-list="updateList"></create-order-modal>
+    <create-order-modal v-if="isCreateModalVisible" @close-modal="closeModal"></create-order-modal>
 
-    <edit-order-modal v-if="isEditModalVisible" @close-modal="closeModal" :order="orderToUpdate" @handle-edit="handleEdit"></edit-order-modal>
+    <edit-order-modal v-if="isEditModalVisible" @close-modal="closeModal" :order="orderToUpdate"
+        @handle-edit="handleEdit"></edit-order-modal>
 
-    <confirm-delete-modal v-if="isDeleteModalVisible" :entity-type="ENTITY_TYPE" :entity-id="entityId" @close-modal="closeModal"
-    @handle-delete="handleDelete"></confirm-delete-modal>
+    <confirm-delete-modal v-if="isDeleteModalVisible" :entity-type="ENTITY_TYPE" :entity-id="entityId"
+        @close-modal="closeModal" @handle-delete="handleDelete"></confirm-delete-modal>
 
     <div>
         <table>
@@ -35,7 +36,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, i) in orders" :key="i">
+                <tr v-for="(item, i) in orders" :key="i" @click="openDetails(item)">
                     <td>{{ item.id }}</td>
                     <td>{{ formatDate(item.order_date) }}</td>
                     <td>{{ item.customer.last_name }}</td>
@@ -48,11 +49,11 @@
                     <td>{{ item.shipped_country }}</td>
                     <td>
                         <span>
-                            <Edit_Icon class="table_icon" @click="openEditModal(item.id)"/>
+                            <Edit_Icon class="table_icon" @click.stop @click="openEditModal(item.id)" />
                         </span>
                         <span>
-                            <Trash_Icon class="table_icon__left" @click="openDeleteModal(item.id)"/>
-                         </span>
+                            <Trash_Icon class="table_icon__left" @click.stop @click="openDeleteModal(item.id)" />
+                        </span>
                     </td>
                 </tr>
             </tbody>
@@ -65,7 +66,7 @@ import formatDate from '@/composables/util';
 
 import { deleteRecordsInOrders, editRecordInOrders, loadOrders } from '@/api/reporting/orders';
 
-import { defineComponent, onMounted, ref, toRaw } from 'vue'
+import { computed, defineComponent, onMounted, ref, toRaw } from 'vue'
 
 import Edit_Icon from '@/assets/icons/Edit_Icon.vue';
 import Trash_Icon from '@/assets/icons/Trash_Icon.vue';
@@ -75,6 +76,9 @@ import CreateOrderModal from '../modals/CreateOrderModal.vue';
 import EditOrderModal from '../modals/EditOrderModal.vue';
 import ConfirmDeleteModal from '../modals/ConfirmDeleteModal.vue'
 
+import { useStore } from 'vuex';
+import router from '@/router';
+import { IOrder } from '@/models/IOrder';
 
 export default defineComponent({
 
@@ -89,7 +93,13 @@ export default defineComponent({
 
     setup() {
 
-        const orders = ref()
+        const store = useStore()
+
+        const orders = computed(() => {
+            let data = store.getters['orderManagement/getOrders']
+            if (!data) return
+            return data;
+        })
 
         const ENTITY_TYPE = 'order';
         const entityId = ref();
@@ -101,6 +111,25 @@ export default defineComponent({
 
         const orderIdToUpdate = ref('');
         const orderToUpdate = ref();
+
+        const openDetails = (item: IOrder) => {
+            let id = item.id;
+
+            setDataForDetailsPage(item);
+
+            router.push({
+                name: 'order-details',
+                params: {
+                    id
+                }
+            })
+        }
+
+        const setDataForDetailsPage = (item: IOrder) => {
+            return store.dispatch('orderManagement/setOrderDetails', {
+                ...item
+            })
+        }
 
         const openCreateModal = () => {
             isCreateModalVisible.value = true;
@@ -125,33 +154,39 @@ export default defineComponent({
         }
 
         const updateList = async () => {
-            orders.value = await loadOrders()
+            return Promise.allSettled([
+                store.dispatch('orderManagement/setOrders', {})
+            ])
         }
 
         const handleEdit = (editedOrder: any) => {
             isEditModalVisible.value = false;
 
-            editRecordInOrders(orderIdToUpdate.value,
-                editedOrder
-            )
-            .then(() => {
-                closeModal();
-                updateList();
-                orderIdToUpdate.value = '';
-            })
+            let id = orderIdToUpdate.value;
+
+            editRecordInOrders(orderIdToUpdate.value, editedOrder)
+                .then(() => {
+                    closeModal();
+
+                    store.dispatch('orderManagement/updateOrder', { editedOrder, id })
+                    orderIdToUpdate.value = '';
+                })
         }
 
         const handleDelete = () => {
             isDeleteModalVisible.value = false;
             deleteRecordsInOrders(orderIdToDelete.value).then(() => {
-                updateList();
+
+                return store.dispatch('orderManagement/deleteOrder', orderIdToDelete.value);
+            }).catch((error) => {
+                console.log(error);
+
             })
         }
 
 
         onMounted(() => {
-            updateList();
-            
+            if (!orders.value) updateList();
         })
 
         return {
@@ -169,9 +204,10 @@ export default defineComponent({
             handleDelete,
             handleEdit,
             openCreateModal,
+            openDetails,
             openDeleteModal,
             openEditModal,
-            updateList
+
         }
     }
 })
