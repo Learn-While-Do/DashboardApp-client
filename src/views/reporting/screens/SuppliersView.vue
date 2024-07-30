@@ -1,6 +1,8 @@
 <template>
     <div>
-        hello from suppliers
+        <h1>
+            Hello suppliers
+        </h1>
     </div>
 </template>
 <script lang="ts">

@@ -1,8 +1,7 @@
-import { loadOrders } from "@/api/reporting";
-import { GlobalState } from "../types";
-import { Commit } from "vuex";
-import { getOrderDetails } from "@/api/reporting/orders";
+import { loadOrders } from "@/api/reporting/orders";
 import { IOrder } from "@/models/IOrder";
+import { Commit } from "vuex";
+import { GlobalState } from "../types";
 
 export default {
   namespaced: true,
@@ -31,11 +30,19 @@ export default {
     POST_ORDER(state: GlobalState, context: any) {
       state.orders.unshift(context.responseObject);
     }
+
   },
   actions: {
-    async setOrders({ commit }: { commit: Commit }) {
-      let data = await loadOrders();
-      commit("SET_ORDERS", data);
+    async setOrders({ commit }: { commit: Commit }, payload: any) {
+      let data: any = await loadOrders(
+        payload.filteredCountry,
+        payload.filteredCity,
+        payload.search,
+        payload.page,
+        payload.per_page,
+        payload.order_by
+      );
+      commit("SET_ORDERS", data.results);
       return data;
     },
     async setOrderDetails ({commit}: {commit: Commit}, payload: IOrder) {
@@ -51,6 +58,7 @@ export default {
       commit("POST_ORDER", payload)
     }
   },
+
   getters: {
     getOrders(state: GlobalState) {
       return state.orders;
@@ -58,5 +66,5 @@ export default {
     getOrderDetails(state: GlobalState) {
       return state.orderDetails;
     }
-  },
+  }
 };

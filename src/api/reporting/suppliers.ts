@@ -9,7 +9,7 @@ const URLS = {
 export const loadSuppliers = () => {
   return new Promise((resolve, reject) => {
     api
-      .get(URLS.suppliers)
+      .get(URLS.suppliers, {})
       .then((response: AxiosResponse) => {
         if (response.status === 200) {
           resolve(response.data);

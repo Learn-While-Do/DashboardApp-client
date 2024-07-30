@@ -93,7 +93,7 @@ import Modal from '@/components/common/Modal.vue'
 import Close_Icon from '@/assets/icons/Close_Icon.vue';
 
 
-import { loadSuppliers } from '@/api/reporting/suppliers';
+import { loadSuppliers } from '@/api/common/suppliers';
 import { loadCategories } from '@/api/common/categories';
 import { addNewProduct } from '@/api/reporting/products';
 import { IProduct } from '@/models/IProduct';

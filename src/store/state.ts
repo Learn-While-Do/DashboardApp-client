@@ -7,7 +7,11 @@ const state = (): GlobalState => {
         orders: [],
         orderDetails: {} as IOrder,
         products: [],
-        productDetails: {} as IProduct
+        productDetails: {} as IProduct,
+        pages: 0,
+        pageNumber: 1,
+        count: 0,
+        numberOfPages: 0
     }
 }
 

@@ -73,3 +73,74 @@ table {
         margin-left: .8rem;
     }
 }
+
+.filters {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    margin: 20px;
+    top: 10px;
+
+    .filter-wrapper {
+        position: relative;
+
+        p {
+            position: absolute;
+            font-family: "IBM Plex Sans";
+            font-style: normal;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 18x;
+            color: #313f57;
+            top: -35px;
+            left: 15px;
+        }
+    }
+
+    input,
+    select {
+        min-width: 200px;
+        margin-right: 20px;
+        border: 1px solid #e4e3e1;
+        border-radius: 5px;
+        padding: 10px 25px 10px 15px;
+        max-height: 40px;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .filters_button {
+        min-width: 200px;
+        margin-right: 20px;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        width: 60px;
+        height: 40px;
+
+        &:hover {
+            cursor: pointer;
+            opacity: .8;
+        }
+    }
+
+    #filter {
+        background-color: $color-filter;
+    }
+
+    #refresh {
+        background-color: $color-refresh;
+    }
+}
+
+.sorting-icon {
+    vertical-align: -5px;
+    margin-left: 5px;
+}
+.active-sorting {
+    border-radius: 50%;
+    background-color: $color-1;
+    padding-left: 2px;
+}

@@ -21,7 +21,7 @@
             <select v-model="productId">
                 <option value="" disabled selected>Select product</option>
                 <option v-for="product in products" :key="product.id" :value="product.id">
-                    {{ product.product_name }}
+                    {{ product.product_name }} - {{ product.supplier.company_name }}
                 </option>
             </select>
 
@@ -128,7 +128,7 @@ import Close_Icon from '@/assets/icons/Close_Icon.vue'
 
 import { defineComponent, onBeforeMount, ref, watch } from 'vue'
 import { loadCustomers } from '@/api/relations/customers';
-import { loadProducts } from '@/api/reporting/products';
+import { loadProducts } from '@/api/common/products';
 import { IOrder } from '@/models/IOrder';
 import { addNewOrder } from '@/api/reporting/orders';
 

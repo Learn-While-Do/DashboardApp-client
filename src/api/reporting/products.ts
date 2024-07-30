@@ -9,10 +9,27 @@ const URLS = {
   products: "products/",
 };
 
-export const loadProducts = () => {
-  return new Promise((resolve, reject) => {
+export const loadProducts = (
+  supplier__company_name: string,
+  unit_price: string,
+  search: string,
+  page: string,
+  page_size: string,
+  order_by: string
+) => {
+  
+  return new Promise((resolve, reject) => {        
     api
-      .get(URLS.products)
+      .get(URLS.products, {
+        params: {
+          unit_price,
+          supplier__company_name,
+          search,
+          page,
+          page_size,
+          order_by
+        }
+      })
       .then((response: AxiosResponse) => {
         if (response.status === 200) {
           resolve(response.data);
@@ -101,7 +118,7 @@ export const getProductDetails = (productId: string) => {
 
   return new Promise((resolve, reject) => {
     api
-      .get(URLS.products + productId + "/") //, {}
+      .get(URLS.products + productId + "/", {})
       .then((response: AxiosResponse) => {
 
         if (response.status === 200) {

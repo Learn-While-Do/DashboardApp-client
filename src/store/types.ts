@@ -6,4 +6,8 @@ export interface GlobalState{
     orderDetails: IOrder;
     products: any[];
     productDetails: IProduct;
+    pages: number;
+    pageNumber: number;
+    count: number;
+    numberOfPages: number;
 }

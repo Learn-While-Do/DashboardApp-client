@@ -10,6 +10,45 @@
         </button>
     </header>
 
+    <div class="filters">
+
+        <div class="filter-wrapper">
+            <p>Shipped country:</p>
+            <select v-model="filteredCountry">
+                <option value="" disabled selected>All countries</option>
+                <option v-for="(country, i) in countries" :key="i" :value="country">
+                    {{ country }}
+                </option>
+            </select>
+        </div>
+
+        <div class="filter-wrapper">
+            <p>Shipped city:</p>
+            <select v-model="filteredCity">
+                <option value="" disabled selected>All cities</option>
+                <option v-for="(city, i) in cities" :key="i" :value="city">
+                    {{ city }}</option>
+
+            </select>
+        </div>
+        <div class="filter-wrapper">
+            <p>Search:</p>
+            <input type="text" v-model="search" placeholder="Search (product or customer)" @keyup.enter="filterList">
+        </div>
+
+        <div class="filter-wrapper">
+            <p>Filter:</p>
+            <button id="filter" class="filters_button" @click="filterList">Filter</button>
+        </div>
+
+        <div class="filter-wrapper">
+            <p>Refresh:</p>
+            <button id="refresh" class="filters_button" @click="refreshList">Refresh</button>
+        </div>
+
+
+    </div>
+
     <create-order-modal v-if="isCreateModalVisible" @close-modal="closeModal"></create-order-modal>
 
     <edit-order-modal v-if="isEditModalVisible" @close-modal="closeModal" :order="orderToUpdate"
@@ -22,8 +61,12 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Order date</th>
+                    <th @click="setSortingBy(ORDER_BY_ID)">ID
+                        <Sorting_Icon :class="orderBy === ORDER_BY_ID ? 'active-sorting' : ''" class="sorting-icon" />
+                    </th>
+                    <th @click="setSortingBy(ORDER_BY_DATE)">Order date
+                        <Sorting_Icon :class="orderBy === ORDER_BY_DATE ? 'active-sorting' : ''" class="sorting-icon" />
+                    </th>
                     <th>Customer name</th>
                     <th>Product name</th>
                     <th>Required date</th>
@@ -58,27 +101,33 @@
                 </tr>
             </tbody>
         </table>
+        <pagination v-if="count > 0" :current-page="currentPage" :per-page="perPage" :number-of-pages="numberOfPages"
+            :count="count" @update-page="updatePage" @update-table-size="updateTableSize"></pagination>
     </div>
 </template>
 <script lang="ts">
 
-import formatDate from '@/composables/util';
+import formatDate, { extractValues } from '@/composables/util';
 
-import { deleteRecordsInOrders, editRecordInOrders, loadOrders } from '@/api/reporting/orders';
+import { deleteRecordsInOrders, editRecordInOrders } from '@/api/reporting/orders';
 
-import { computed, defineComponent, onMounted, ref, toRaw } from 'vue'
+import { computed, defineComponent, onMounted, ref, toRaw } from 'vue';
 
 import Edit_Icon from '@/assets/icons/Edit_Icon.vue';
-import Trash_Icon from '@/assets/icons/Trash_Icon.vue';
 import Plus_Icon from '@/assets/icons/Plus_Icon.vue';
+import Sorting_Icon from '@/assets/icons/Sorting_Icon.vue';
+import Trash_Icon from '@/assets/icons/Trash_Icon.vue';
 
+import Pagination from '@/components/common/Pagination.vue';
+import ConfirmDeleteModal from '../modals/ConfirmDeleteModal.vue';
 import CreateOrderModal from '../modals/CreateOrderModal.vue';
 import EditOrderModal from '../modals/EditOrderModal.vue';
-import ConfirmDeleteModal from '../modals/ConfirmDeleteModal.vue'
 
-import { useStore } from 'vuex';
-import router from '@/router';
+import { loadCities } from '@/api/common/cities';
+import { loadCountries } from '@/api/common/countries';
 import { IOrder } from '@/models/IOrder';
+import router from '@/router';
+import { useStore } from 'vuex';
 
 export default defineComponent({
 
@@ -87,11 +136,16 @@ export default defineComponent({
         CreateOrderModal,
         EditOrderModal,
         Edit_Icon,
-        Trash_Icon,
-        Plus_Icon
+        Pagination,
+        Plus_Icon,
+        Sorting_Icon,
+        Trash_Icon
     },
 
     setup() {
+
+        const ORDER_BY_ID = 'id';
+        const ORDER_BY_DATE = 'order_date';
 
         const store = useStore()
 
@@ -100,6 +154,12 @@ export default defineComponent({
             if (!data) return
             return data;
         })
+
+        const search = ref()
+        const countries = ref();
+        const cities = ref();
+        const filteredCountry = ref();
+        const filteredCity = ref();
 
         const ENTITY_TYPE = 'order';
         const entityId = ref();
@@ -112,11 +172,35 @@ export default defineComponent({
         const orderIdToUpdate = ref('');
         const orderToUpdate = ref();
 
+        const orderBy = ref('id');
+
+        const currentPage = ref(1);
+        const perPage = ref(5);
+
+        const numberOfPages = computed(() => {
+            const data = store.getters['paginationManagement/getNumberOfPages'];
+            return Number(data);
+        });
+
+        const count = computed(() => {
+            const data = store.getters['paginationManagement/getCount'];
+            return Number(data);
+        });
+
+        const updatePage = (page: any) => {
+            currentPage.value = page;
+            updateList();
+        }
+
+        const updateTableSize = (pageSize: any) => {
+            perPage.value = pageSize.value;
+            currentPage.value = 1;
+            updateList();
+        }
+
         const openDetails = (item: IOrder) => {
             let id = item.id;
-
             setDataForDetailsPage(item);
-
             router.push({
                 name: 'order-details',
                 params: {
@@ -153,10 +237,49 @@ export default defineComponent({
             isDeleteModalVisible.value = false;
         }
 
+        const setSortingBy = (ordering: string) => {
+            orderBy.value = ordering;
+            updateList();
+        }
+
+        const filterList = () => {
+            currentPage.value = 1
+            updateList()
+        }
+
+        const refreshList = () => {
+            window.location.reload();
+        }
+
+        const getCountries = async () => {
+            let data: any = await loadCountries();
+            countries.value = extractValues(data);
+        }
+
+        const getCities = async () => {
+            let data: any = await loadCities();
+            cities.value = extractValues(data);
+        }
+
         const updateList = async () => {
-            return Promise.allSettled([
-                store.dispatch('orderManagement/setOrders', {})
-            ])
+
+            let data: any = await Promise.allSettled([
+              
+                store.dispatch('orderManagement/setOrders', {
+                    filteredCountry: filteredCountry.value,
+                    filteredCity: filteredCity.value,
+                    search: search.value,
+                    per_page: perPage.value,
+                    page: currentPage.value,
+                    order_by: orderBy.value,
+                }),
+            ]);
+
+            let paginationInfo = data[0].value
+            store.dispatch('paginationManagement/setNumberOfPages', paginationInfo.number_of_pages);
+            store.dispatch('paginationManagement/setCount', paginationInfo.count);
+            
+            return data;
         }
 
         const handleEdit = (editedOrder: any) => {
@@ -180,26 +303,40 @@ export default defineComponent({
                 return store.dispatch('orderManagement/deleteOrder', orderIdToDelete.value);
             }).catch((error) => {
                 console.log(error);
-
             })
         }
 
-
         onMounted(() => {
-            if (!orders.value) updateList();
+            updateList();
+            getCities();
+            getCountries();
         })
 
         return {
 
             ENTITY_TYPE,
+            ORDER_BY_ID,
+            ORDER_BY_DATE,
+
+            cities,
+            count,
+            countries,
+            currentPage,
             entityId,
+            filteredCity,
+            filteredCountry,
             isCreateModalVisible,
             isDeleteModalVisible,
             isEditModalVisible,
+            numberOfPages,
+            orderBy,
             orders,
             orderToUpdate,
+            perPage,
+            search,
 
             closeModal,
+            filterList,
             formatDate,
             handleDelete,
             handleEdit,
@@ -207,11 +344,14 @@ export default defineComponent({
             openDetails,
             openDeleteModal,
             openEditModal,
-
+            refreshList,
+            setSortingBy,
+            updatePage,
+            updateTableSize
         }
     }
 })
 </script>
-<style lang="">
+<style lang="scss">
 
 </style>

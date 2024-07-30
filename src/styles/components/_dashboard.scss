@@ -4,9 +4,12 @@
 
   @include flex-h;
   height: 100vh;
+  overflow: scroll;
 
   > aside {
     width: 20%;
+    position: sticky;
+    top: 0;
 
     @include flex-v;
 

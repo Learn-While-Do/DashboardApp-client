@@ -3,22 +3,22 @@ import api from "@/api/api";
 import { AxiosResponse, AxiosError } from "axios";
 
 const URLS = {
-  customers: "customers/",
+  suppliers: "supplier-filters/",
 };
 
-export const loadCustomers = () => {
+export const loadSuppliers = () => {
   return new Promise((resolve, reject) => {
     api
-      .get(URLS.customers, {})
+      .get(URLS.suppliers, {})
       .then((response: AxiosResponse) => {
         if (response.status === 200) {
-          resolve(response.data.results);
+          resolve(response.data);
         } else {
           reject();
         }
       })
       .catch((error: AxiosError) => {
-        console.log("caught error in load customers >> ", error);
+        console.log("caught error in load suppliers >> ", error);
       });
   });
 };
