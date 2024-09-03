@@ -157,6 +157,24 @@
           }
         }
       }
+      .bottom-nav {
+        border-top: 1px solid $color-3;
+        > a {
+          @include flex-h;
+          align-items: center;
+          justify-content: flex-start;
+
+          margin: 1px 10px;
+          padding: 20px 20px 25px 10px;
+          font-size: 18px;
+
+          > span {
+            min-width: 140px;
+            font-size: 18px;
+            margin-left: 20px;
+          }
+        }
+      }
     }
   }
 

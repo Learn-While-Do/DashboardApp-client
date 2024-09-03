@@ -15,3 +15,10 @@
     left: 0;
     right: 0;
   }
+
+  @mixin not-last-child {
+    > *:not(:last-child) 
+    {
+      @content
+    }
+  }
