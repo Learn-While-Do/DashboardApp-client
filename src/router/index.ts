@@ -9,7 +9,7 @@ import SuppliersView from "@/views/reporting/screens/SuppliersView.vue";
 import DashboardView from "@/views/DashboardView.vue";
 import CustomersView from "@/views/relations/screens/CustomersView.vue";
 import AdminView from "@/views/administration/AdminView.vue";
-import UserSettings from "@/views/administration/UserSettings.vue";
+import UserSettings from "@/views/user/screens/UserSettings.vue";
 
 import { get as getFromStore} from '@/localStorage';
 
@@ -82,5 +82,16 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
 });
+
+router.beforeEach(async(to, from) => {
+  const isLogged = Boolean(getFromStore('logged'));
+  const requiresReset = getFromStore('logged.requiresReset')
+
+  if(!isLogged && to.name !== 'dashboard') {
+    return {name: 'dashboard'}
+  } else if(requiresReset && to.name !== 'user-settings') {
+    return {name: 'user-settings'}
+  }
+})
 
 export default router;

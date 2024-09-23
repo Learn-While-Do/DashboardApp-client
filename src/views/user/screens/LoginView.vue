@@ -56,9 +56,12 @@ export default defineComponent({
             if(response !== undefined && response.status === 401) {
                 console.warn('error logging', response);
             } else if (response !== undefined && response.status === 200) {
+
                 console.info('loggin successfull!', response.data);
+                
                 saveToStore('logged', {
                     username: response.data.username,
+                    id: response.data.id,
                     isAdmin: response.data.is_admin,
                     access_token: response.data.access,
                     requiresReset: response.data.requires_reset
@@ -80,7 +83,7 @@ export default defineComponent({
 </script>
 <style lang='scss'>
     .login {
-        background-image: url('../../assets/login_background.jpg');
+        background-image: url('../../../assets/login_background.jpg');
         background-size: cover;
         height: 100vh;
         width: 100%;

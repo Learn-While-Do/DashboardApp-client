@@ -6,7 +6,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 
-import LoginView from '@/views/user/LoginView.vue';
+import LoginView from '@/views/user/screens/LoginView.vue';
 
 import { get as getFromStore, load as loadFromStore } from './localStorage';
 

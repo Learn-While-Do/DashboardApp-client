@@ -82,6 +82,7 @@ import Logout_Icon
  from '@/assets/icons/Logout_Icon.vue';
 
 import { get as getFromStore, remove as removeFromStore } from '@/localStorage';
+import api from '@/api/api';
 
 export default defineComponent({
 
@@ -120,6 +121,7 @@ export default defineComponent({
         }
 
         const loggout = () => {
+            api.cancel();
             removeFromStore('logged');
             router.push({
                 name: 'dashboard'
