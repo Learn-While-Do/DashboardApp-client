@@ -144,3 +144,44 @@ table {
     background-color: $color-1;
     padding-left: 2px;
 }
+
+.table-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.action-icon-wrapper {
+    position: relative;
+
+    .tooltiptext {
+        visibility: hidden;
+        width: 70px;
+        font-family: "IBM Plex Sans";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        background-color: $color-brand-2;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 120%;
+        left: -150%;
+    }
+
+    .action-icon {
+        padding: 10px 0;
+        max-width: 30px;
+    }
+
+    .action-icon:hover + .tooltiptext {
+        visibility: visible;
+    }
+
+    .sorting-icon:hover + .tooltiptext {
+        visibility: visible;
+      }
+}

@@ -8,7 +8,7 @@
             </h3>
         </div>
         <div class="admin-action__content">
-          
+
 
             <div class="single-select">
                 <label>Please select a user to unblock</label>
@@ -31,6 +31,7 @@
 import { computed, defineComponent, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { IUser } from '@/models/IUser';
+import { showNotification } from '@/composables/outlets';
 
 
 export default defineComponent({
@@ -56,13 +57,33 @@ export default defineComponent({
             () => {
                 if (username.value !== '') {
                     buttonEnable.value = true
-                } 
+                }
             }
         )
 
-        const unblockUser = async () => {            
-            await store.dispatch('administrationManagement/unblockUser', username.value);
-            resetDropdown()
+        const unblockUser = async () => {
+            let status = await store.dispatch('administrationManagement/unblockUser', username.value);
+            
+            if (status) {
+                showNotification({
+                    props: {
+                        type: 'success',
+                        duration: 5000,
+                        message:
+                            `User unblocked!`
+                    },
+                });
+                resetDropdown()
+            } else {
+                showNotification({
+                    props: {
+                        type: 'error',
+                        duration: 5000,
+                        message:
+                            `User cannot be unblocked at the moment, please try later!`
+                    },
+                });
+            }
         }
 
         const resetDropdown = () => {
@@ -70,7 +91,7 @@ export default defineComponent({
         }
 
         return {
-           
+
             blockedUsers,
             buttonEnable,
             username,

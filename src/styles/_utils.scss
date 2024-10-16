@@ -1,24 +1,41 @@
 @mixin flex-v {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  @mixin flex-h {
-    display: flex;
-    flex-direction: row;
-  }
-  
-  @mixin full-abs {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
+  display: flex;
+  flex-direction: column;
+}
 
-  @mixin not-last-child {
-    > *:not(:last-child) 
-    {
-      @content
-    }
+@mixin flex-h {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin full-abs {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@mixin not-last-child {
+  > *:not(:last-child) {
+    @content;
   }
+}
+
+@mixin hold {
+  background-color: $color-header;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1 );
+}
+
+@mixin click() {
+  transition: all 0.2s linear;
+  &:hover {
+    background-color: $color-4;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  &:active {
+    box-shadow: 0 0 0 8px $color-4;
+  }
+}

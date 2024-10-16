@@ -1,0 +1,109 @@
+.outlets {
+    pointer-events: none;
+    z-index: 100;
+
+    > .notifications {
+        position: absolute;
+        right: 24px;
+        bottom: 24px;
+        min-width: 50%;
+        max-width: 70%;
+
+        @include flex-v;
+        justify-content: flex-end;
+        @include not-last-child {
+            margin-bottom: 16px;
+        }
+    }
+
+    .notification {
+        @include hold;
+        @include flex-h;
+        align-items: center;
+        pointer-events: all;
+        border-radius: 8px;
+        padding-right:  24px;
+
+        > header {
+            padding: 16px;
+            border-right: 1px solid $color-4;
+        }
+
+        > .body {
+            flex: 1;
+            padding: 8px 16px;
+        }
+
+        > .close {
+            padding: 8px 16px;
+            @include click();
+        }
+    }
+
+    > .modals {
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(128, 128, 128, 0.95);
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+
+        .relogin {
+            pointer-events: all;
+            position: fixed;
+            background: white;
+            top: 50%;
+            left: 50vw;
+            transform: translate(-50%, -50%);
+            width: 25%;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+
+            > .title {
+                font-weight: 750;
+                font-size: 18px;
+            }
+
+            > .message {
+                font-size: 14px;
+                text-align: center;
+                margin-bottom: 18px;
+            }
+
+            .input {
+                height: 20px;
+                margin-bottom: 12px;
+            }
+
+            .ticking {
+                font-size: 18px;
+                color: darkviolet;
+
+                button {
+                    cursor: pointer;
+                    margin: 16px;
+                    padding: 6px 12px;
+                    font-size: 18px;
+                    background-color: $color-primary;
+                    color: $color-white;
+                    border: 1px solid transparent;
+                    border-radius: 5px;
+                }
+
+                button:hover {
+                    opacity: .9;
+                }
+
+                button[disabled] {
+                    opacity: .6;
+                    cursor: default;
+                }
+            }
+        }
+    }
+}

@@ -25,7 +25,12 @@
                 </div>
 
                 <button type="submit" class="button is-primary">
-                    Save
+                    <slot name="loader" v-if="isSubmitting">
+                        <loader :message="''" :type="'small'" :color="SMALL_LOADER_COLOR"></loader>
+                    </slot>
+                    <slot v-else>
+                        Save
+                    </slot>
                 </button>
 
             </form>
@@ -38,10 +43,15 @@ import { defineComponent, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { get as getFromStore, load as loadFromStore, save as saveToStore } from '@/localStorage/index';
+import { showNotification } from '@/composables/outlets';
 
+import Loader from '@/components/common/Loader.vue';
+import { SMALL_LOADER_COLOR } from '@/constants/colors';
 
 export default defineComponent({
-    components: {},
+    components: {
+        Loader
+    },
     props: {
         user: {
             type: Object,
@@ -60,7 +70,11 @@ export default defineComponent({
         const lastName = ref(props.user.last_name);
         const email = ref(props.user.email);
 
+        const isSubmitting = ref(false)
+
         const submitForm = async () => {
+
+            isSubmitting.value = true;
 
             const body = {
                 username: username.value,
@@ -71,11 +85,29 @@ export default defineComponent({
 
             };
 
-            let status = await store.dispatch('administrationManagement/updateOwnProfile', body);
+            let response = await store.dispatch('administrationManagement/updateOwnProfile', body);
 
-            if (status) {
+
+            if (response && response.status && response.status === 200) {
+                showNotification({
+                    props: {
+                        type: 'success',
+                        duration: 5000,
+                        message: `The user ${body.username} successfully updated`,
+                    },
+                });
                 resetForm()
                 updateUI(body.username);
+                isSubmitting.value = false;
+            } else if (response.response.status === 406) {
+                showNotification({
+                    props: {
+                        type: 'error',
+                        duration: 5000,
+                        message: `The user ${body.username} profile can not be updated. ${response.response.data.error}`,
+                    },
+                });
+                isSubmitting.value = false;
             }
 
         };
@@ -104,9 +136,12 @@ export default defineComponent({
         }
 
         return {
+            SMALL_LOADER_COLOR,
+
             email,
             firstName,
             lastName,
+            isSubmitting,
             username,
 
             submitForm

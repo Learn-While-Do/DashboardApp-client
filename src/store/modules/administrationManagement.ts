@@ -128,13 +128,12 @@ export default {
 
     updateOwnProfile({ commit }: { commit: Commit }, payload: any) {
       return updateOwnProfile(payload)
-        .then(() => {
+        .then((response: any) => {
           commit("UPDATE_OWN_PROFILE", payload);
-          return true;
+          return response;
         })
-        .catch((e: any) => {
-          console.log("updateOwnProfile error ==>", e);
-          return false;
+        .catch((error: any) => {
+          return error;
         });
     },
   },

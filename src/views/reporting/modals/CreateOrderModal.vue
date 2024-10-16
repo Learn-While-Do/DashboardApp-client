@@ -50,7 +50,9 @@
                 </strong>
             </label>
 
-            <input type="date" v-model="requiredDate">
+            <input type="date" v-model="requiredDate" @change="validateDate">
+
+            <error-message v-if="!dateValid" :message="'Date must not be in the past'"></error-message>
 
             <label>
                 <strong>
@@ -132,11 +134,15 @@ import { loadProducts } from '@/api/common/products';
 import { IOrder } from '@/models/IOrder';
 import { addNewOrder } from '@/api/reporting/orders';
 
+import ErrorMessage from '@/components/common/ErrorMessage.vue';
+import formatDate from '@/composables/util';
+
 import { useStore } from 'vuex';
 
 export default defineComponent({
     components: {
         Close_Icon,
+        ErrorMessage,
         Modal
     },
 
@@ -147,6 +153,7 @@ export default defineComponent({
         const store = useStore()
 
         const buttonEnable = ref(false)
+        const dateValid = ref(true)
 
         const productId = ref('')
         const customerId = ref('')
@@ -159,6 +166,15 @@ export default defineComponent({
 
         const customers = ref()
         const products = ref()
+
+        const validateDate = () => {
+            let today = formatDate((new Date()))
+            if(today <= formatDate(new Date(requiredDate.value))) {
+                dateValid.value = true
+            } else {
+                dateValid.value = false
+            }
+        }
 
         watch(()=> [customerId.value, productId.value, requiredDate.value, shippedName.value,  
                     shippedAddress.value, shippedCity.value, shippedCountry.value, shippedPostalCode.value],
@@ -220,9 +236,9 @@ export default defineComponent({
 
         return {
             buttonEnable,
-
-            productId,
+            dateValid,
             customerId,
+            productId,
             requiredDate,
             shippedName,
             shippedAddress,
@@ -234,7 +250,8 @@ export default defineComponent({
             products,
 
             addNewRecord,
-            closeModal
+            closeModal,
+            validateDate
 
         }
     }
